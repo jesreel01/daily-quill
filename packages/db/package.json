@@ -1,0 +1,30 @@
+{
+  "name": "@repo/db",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    ".": "./dist/index.js",
+    "./schema": "./dist/schema/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/schema/index.ts --dts",
+    "dev": "tsup src/index.ts src/schema/index.ts --dts --watch",
+    "db:migrate": "drizzle-kit migrate",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:pull": "drizzle-kit pull"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.1",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/pg": "^8.11.10",
+    "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.31.8",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.3"
+  }
+}
