@@ -23,12 +23,14 @@ async function bootstrap() {
       filter: true,
       showRequestDuration: true,
       persistAuthorization: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
     },
     customSiteTitle: 'Daily Quill API Docs'
   };
 
   const document = SwaggerModule.createDocument(app, config, {
-    operationIdFactory: (controllerKey: string, methodKey: string) => `${controllerKey.replace(/Controller$/, '')}_${methodKey}`
+    ignoreGlobalPrefix: true,
   });
   SwaggerModule.setup('docs', app, document, swaggerUiOptions);
 

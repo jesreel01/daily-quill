@@ -1,4 +1,3 @@
-export class UsersReposistory {}
 import { Inject, Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DRIZZLE_DB } from '../../db/drizzle.provider';

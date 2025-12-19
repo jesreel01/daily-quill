@@ -8,6 +8,20 @@
       "when": 1765957890726,
       "tag": "0000_youthful_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766105642569,
+      "tag": "0001_special_blacklash",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766107446743,
+      "tag": "0002_classy_kree",
+      "breakpoints": true
     }
   ]
 }

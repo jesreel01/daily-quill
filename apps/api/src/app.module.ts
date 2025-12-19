@@ -2,8 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 import databaseConfig from './config/database.config';
 import Joi from 'joi';
+import { DrizzleModule } from './db/drizzle.module';
 
 @Module({
   imports: [
@@ -19,6 +22,9 @@ import Joi from 'joi';
       }),
       validationOptions: { allowUnknown: true, abortEarly: false }
     }),
+    AuthModule,
+    DrizzleModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
