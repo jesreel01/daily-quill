@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { AuthRepository } from './auth.reposistory';
 import { RegisterDto } from './dto/register.dto';
 import { Auth } from './entities/auth.entity';
+import { UsersService } from '../users/users.service';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -12,12 +14,23 @@ describe('AuthService', () => {
     create: jest.fn(),
   } as unknown as AuthRepository;
 
+  const mockUsersService = {
+    create: jest.fn(),
+    findByEmail: jest.fn(),
+  };
+
+  const mockJwtService = {
+    sign: jest.fn(),
+  };
+
   beforeEach(async () => {
     jest.resetAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: AuthRepository, useValue: mockAuthRepository },
+        { provide: UsersService, useValue: mockUsersService },
+        { provide: JwtService, useValue: mockJwtService },
       ],
     }).compile();
 
@@ -31,19 +44,31 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    it('should call authRepository.create and return created record', async () => {
+    it('should call usersService.create, authRepository.create and return tokens', async () => {
       const dto: RegisterDto = { email: 'new@example.com', name: 'New User', password: 'password' };
-      const created = new Auth({ id: 'id-1', userId: 'user-1', passwordHash: 'hashed' });
-      (mockAuthRepository.create as jest.Mock).mockResolvedValue(created);
+      const user = { id: 'user-1', email: dto.email, name: dto.name, createdAt: new Date(), updatedAt: new Date() };
+      const createdAuth = new Auth({ id: 'id-1', userId: 'user-1', passwordHash: 'hashed' });
+
+      mockUsersService.create.mockResolvedValue(user);
+      (mockAuthRepository.create as jest.Mock).mockResolvedValue(createdAuth);
+      mockJwtService.sign.mockReturnValue('token');
+
       const res = await service.register(dto);
+
+      expect(mockUsersService.create).toHaveBeenCalledWith({ email: dto.email, name: dto.name });
       expect(mockAuthRepository.create).toHaveBeenCalled();
-      expect(res).toEqual(created);
+      expect(res.user.id).toBe(user.id);
+      expect(res.accessToken).toBe('token');
     });
 
     it('should propagate errors from repository', async () => {
       const dto: RegisterDto = { email: 'dup@example.com', name: 'Dup', password: 'password' };
+      const user = { id: 'user-1', email: dto.email, name: dto.name, createdAt: new Date(), updatedAt: new Date() };
       const error = new Error('Repo failure');
+
+      mockUsersService.create.mockResolvedValue(user);
       (mockAuthRepository.create as jest.Mock).mockRejectedValue(error);
+
       await expect(service.register(dto)).rejects.toThrow(error);
     });
   });
