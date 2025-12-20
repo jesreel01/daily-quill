@@ -18,7 +18,7 @@ async function bootstrap() {
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' }, 'bearer-auth')
     .build();
 
-  const swaggerUiOptions : SwaggerCustomOptions = {
+  const swaggerUiOptions: SwaggerCustomOptions = {
     swaggerOptions: {
       filter: true,
       showRequestDuration: true,
@@ -29,9 +29,7 @@ async function bootstrap() {
     customSiteTitle: 'Daily Quill API Docs'
   };
 
-  const document = SwaggerModule.createDocument(app, config, {
-    ignoreGlobalPrefix: true,
-  });
+  const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document, swaggerUiOptions);
 
   await app.listen(process.env.PORT ?? 3000);
