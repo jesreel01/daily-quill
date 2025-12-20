@@ -1,7 +1,11 @@
 export class Auth {
-    constructor(
-        public id: string,
-        public userId: string,
-        public passwordHash: string,
-    ) {}
+    id: string = '';
+    userId: string = '';
+    passwordHash: string = '';
+
+    constructor(partial?: Partial<Auth>) {
+        Object.assign(this, partial);
+    }
 }
+
+

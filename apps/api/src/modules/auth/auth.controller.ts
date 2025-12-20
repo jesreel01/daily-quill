@@ -1,23 +1,32 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
+import { RegisterResponseDto } from './dto/register-response.dto';
+import { plainToInstance } from 'class-transformer';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('login')
   @ApiOperation({ summary: 'Login' })
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 200, type: LoginResponseDto })
+  async login(@Body() dto: LoginDto): Promise<LoginResponseDto> {
+    const response = await this.authService.login(dto);
+    return plainToInstance(LoginResponseDto, response);
   }
 
   @Post('register')
   @ApiOperation({ summary: 'Registration' })
-  register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  @ApiBody({ type: RegisterDto })
+  @ApiResponse({ status: 201, type: RegisterResponseDto })
+  async register(@Body() dto: RegisterDto): Promise<RegisterResponseDto> {
+    const response = await this.authService.register(dto);
+    return plainToInstance(RegisterResponseDto, response);
   }
 }
