@@ -3,19 +3,18 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginSchema } from "@/lib/schemas/auth-schema";
-import { authService } from "@/services/auth.service";
-import { Eye, EyeOff, Hand, Lock, Mail } from "lucide-react";
+import { loginAction } from "@/app/actions/auth";
+import { Mail } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Logo } from "@/components/logo";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
 
 export default function LoginPage() {
-    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -30,24 +29,22 @@ export default function LoginPage() {
     const onSubmit = async (data: LoginSchema) => {
         setIsLoading(true);
         setError(null);
-        try {
-            await authService.login(data);
-            console.log("Login successful");
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Something went wrong");
-        } finally {
+
+        const result = await loginAction(data);
+
+        if (result?.error) {
+            setError(result.error);
             setIsLoading(false);
         }
+        // If success, redirect happens automatically
     };
 
     return (
         <div className="bg-background min-h-screen flex flex-col antialiased selection:bg-primary/20">
             <header className="flex items-center justify-between px-6 lg:px-40 py-4 bg-background/80 backdrop-blur-md sticky top-0 z-50">
-                <div className="flex items-center gap-3 select-none">
-                    <h2 className="text-lg font-bold tracking-tight">
-                        Daily Quill
-                    </h2>
-                </div>
+                <Link href="/">
+                    <Logo />
+                </Link>
                 <Button asChild>
                     <Link href="/sign-up">Sign Up</Link>
                 </Button>
@@ -59,7 +56,7 @@ export default function LoginPage() {
                 <Card className="w-full max-w-[440px] shadow-xl border-border/50 bg-card/95 backdrop-blur-sm">
                     <CardHeader className="text-center space-y-2 pb-6">
                         <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2 text-primary">
-                            <Hand className="w-6 h-6" />
+                            <Logo iconClassName="w-6 h-6" textClassName="hidden" />
                         </div>
                         <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
                         <CardDescription className="text-base">
@@ -105,28 +102,10 @@ export default function LoginPage() {
                                                 </Link>
                                             </div>
                                             <FormControl>
-                                                <div className="relative group">
-                                                    <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                    <Input
-                                                        type={showPassword ? "text" : "password"}
-                                                        placeholder="Enter your password"
-                                                        className="pl-10 pr-10 h-11 bg-background"
-                                                        {...field}
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="absolute right-1 top-1 h-9 w-9 text-muted-foreground hover:text-foreground"
-                                                        onClick={() => setShowPassword(!showPassword)}
-                                                    >
-                                                        {showPassword ? (
-                                                            <EyeOff className="h-4 w-4" />
-                                                        ) : (
-                                                            <Eye className="h-4 w-4" />
-                                                        )}
-                                                    </Button>
-                                                </div>
+                                                <PasswordInput
+                                                    placeholder="Enter your password"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -163,7 +142,7 @@ export default function LoginPage() {
             </main>
 
             <footer className="py-6 text-center text-xs text-muted-foreground">
-                <p>© 2024 Daily Writer Inc. Zero friction focus.</p>
+                <p>© 2024 Daily Quill. Zero friction focus.</p>
             </footer>
         </div>
     );

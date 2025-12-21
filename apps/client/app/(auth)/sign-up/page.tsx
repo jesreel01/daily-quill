@@ -3,19 +3,18 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterSchema } from "@/lib/schemas/auth-schema";
-import { authService } from "@/services/auth.service";
-import { Eye, EyeOff, Lock, Mail, Edit3, User } from "lucide-react";
+import { registerAction } from "@/app/actions/auth";
+import { Mail, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Logo } from "@/components/logo";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
 
 export default function SignUpPage() {
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -32,14 +31,11 @@ export default function SignUpPage() {
     const onSubmit = async (data: RegisterSchema) => {
         setIsLoading(true);
         setError(null);
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { confirmPassword, ...registerData } = data;
-            await authService.register(registerData as any);
-            console.log("Registration successful");
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Something went wrong");
-        } finally {
+
+        const result = await registerAction(data);
+
+        if (result?.error) {
+            setError(result.error);
             setIsLoading(false);
         }
     };
@@ -51,10 +47,10 @@ export default function SignUpPage() {
                 <div className="mx-auto w-full max-w-sm lg:w-96 space-y-8">
                     {/* Logo */}
                     <Link href="/" className="group flex items-center gap-3 cursor-pointer w-fit">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground group-hover:scale-105 transition-transform">
-                            <Edit3 className="w-6 h-6" />
-                        </div>
-                        <h2 className="text-2xl font-bold tracking-tight text-foreground">DailyWriter</h2>
+                        <Logo
+                            iconClassName="w-6 h-6"
+                            textClassName="text-2xl"
+                        />
                     </Link>
 
                     {/* Header */}
@@ -119,24 +115,10 @@ export default function SignUpPage() {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <div className="relative group">
-                                                <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                <Input
-                                                    type={showPassword ? "text" : "password"}
-                                                    placeholder="At least 8 characters"
-                                                    className="pl-10 pr-10 h-11"
-                                                    {...field}
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="absolute right-1 top-1 h-9 w-9 text-muted-foreground hover:text-foreground"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                >
-                                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                                </Button>
-                                            </div>
+                                            <PasswordInput
+                                                placeholder="At least 8 characters"
+                                                {...field}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -150,24 +132,10 @@ export default function SignUpPage() {
                                     <FormItem>
                                         <FormLabel>Confirm Password</FormLabel>
                                         <FormControl>
-                                            <div className="relative group">
-                                                <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                <Input
-                                                    type={showConfirmPassword ? "text" : "password"}
-                                                    placeholder="Repeat password"
-                                                    className="pl-10 pr-10 h-11"
-                                                    {...field}
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="absolute right-1 top-1 h-9 w-9 text-muted-foreground hover:text-foreground"
-                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                >
-                                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                                </Button>
-                                            </div>
+                                            <PasswordInput
+                                                placeholder="Repeat password"
+                                                {...field}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
