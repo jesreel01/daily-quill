@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import { DRIZZLE_DB, type DrizzleDatabase } from '../../db/drizzle.provider';
 import { auth } from '@repo/db';
-import { Auth } from './entities/auth.entity';
+import { Auth } from '@repo/shared';
 
 @Injectable()
 export class AuthRepository {

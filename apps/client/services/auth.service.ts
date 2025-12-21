@@ -1,9 +1,10 @@
 import type { LoginSchema, RegisterSchema } from "@/lib/schemas/auth-schema";
+import type { RegisterDto, LoginDto } from "@repo/shared";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
 export const authService = {
-    async login(credentials: LoginSchema) {
+    async login(credentials: LoginDto) {
         const response = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
             headers: {
@@ -20,7 +21,7 @@ export const authService = {
         return response.json();
     },
 
-    async register(data: RegisterSchema) {
+    async register(data: RegisterDto) {
         const response = await fetch(`${API_URL}/auth/register`, {
             method: "POST",
             headers: {
@@ -37,3 +38,4 @@ export const authService = {
         return response.json();
     },
 };
+

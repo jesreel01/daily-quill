@@ -1,8 +1,7 @@
 import { Controller, Get, Body, Patch, Param, Delete, UseInterceptors, ClassSerializerInterceptor, ParseUUIDPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UserResponseDto } from '@repo/shared';
 import { ApiOperation, ApiTags, ApiResponse as SwaggerApiResponse } from '@nestjs/swagger';
-import { UserResponseDto } from './dto/user-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { ApiStandardResponse, ApiStandardErrorResponse } from '../../common/decorators/api-response.decorator';
 
