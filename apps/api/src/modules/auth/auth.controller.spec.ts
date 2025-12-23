@@ -1,11 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto, LoginResponseDto, RegisterResponseDto } from '@repo/shared';
+import {
+  LoginDto,
+  RegisterDto,
+  LoginResponseDto,
+  RegisterResponseDto,
+} from '@repo/shared';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authService: AuthService;
 
   const mockAuthService = {
     login: jest.fn(),
@@ -25,7 +29,6 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    authService = module.get<AuthService>(AuthService);
   });
 
   it('should be defined', () => {
@@ -34,7 +37,10 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('should return a LoginResponseDto instance on success', async () => {
-      const loginDto: LoginDto = { email: 'test@example.com', password: 'password123' };
+      const loginDto: LoginDto = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
       const serviceResponse = {
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
@@ -45,14 +51,17 @@ describe('AuthController', () => {
 
       const result = await controller.login(loginDto);
 
-      expect(authService.login).toHaveBeenCalledWith(loginDto);
+      expect(mockAuthService.login).toHaveBeenCalledWith(loginDto);
       expect(result).toBeInstanceOf(LoginResponseDto);
       expect(result.accessToken).toBe(serviceResponse.accessToken);
       expect(result.user.email).toBe(serviceResponse.user.email);
     });
 
     it('should propagate errors from AuthService', async () => {
-      const loginDto: LoginDto = { email: 'test@example.com', password: 'password123' };
+      const loginDto: LoginDto = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
       mockAuthService.login.mockRejectedValue(new Error('Unauthorized'));
 
       await expect(controller.login(loginDto)).rejects.toThrow('Unauthorized');
@@ -76,7 +85,7 @@ describe('AuthController', () => {
 
       const result = await controller.register(registerDto);
 
-      expect(authService.register).toHaveBeenCalledWith(registerDto);
+      expect(mockAuthService.register).toHaveBeenCalledWith(registerDto);
       expect(result).toBeInstanceOf(RegisterResponseDto);
       expect(result.accessToken).toBe(serviceResponse.accessToken);
     });
@@ -89,7 +98,9 @@ describe('AuthController', () => {
       };
       mockAuthService.register.mockRejectedValue(new Error('Conflict'));
 
-      await expect(controller.register(registerDto)).rejects.toThrow('Conflict');
+      await expect(controller.register(registerDto)).rejects.toThrow(
+        'Conflict',
+      );
     });
   });
 });

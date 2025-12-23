@@ -11,7 +11,7 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   public async login(loginDto: LoginDto) {
     const user = await this.usersService.findByEmail(loginDto.email);
@@ -24,7 +24,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, auth.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      auth.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -52,10 +55,12 @@ export class AuthService {
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(registerDto.password, salt);
 
-    await this.authRepository.create(new Auth({
-      userId: user.id,
-      passwordHash: passwordHash,
-    }));
+    await this.authRepository.create(
+      new Auth({
+        userId: user.id,
+        passwordHash: passwordHash,
+      }),
+    );
 
     const payload = { email: user.email, sub: user.id };
     return {

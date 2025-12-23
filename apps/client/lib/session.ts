@@ -10,12 +10,11 @@ export async function createSession(accessToken: string, refreshToken: string) {
     // though replacing overwrites.
 
     cookieStore.set(SESSION_COOKIE_NAME, accessToken, {
-        httpOnly: true,
+        httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        // Set expiry to match token expiry or arbitrary (e.g. 7 days) if not provided
-        maxAge: 60 * 60 * 24 * 7, // 1 week
+        maxAge: 60 * 60 * 24 * 7,
     });
 
     cookieStore.set(REFRESH_COOKIE_NAME, refreshToken, {

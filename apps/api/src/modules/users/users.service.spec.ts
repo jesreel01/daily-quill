@@ -6,7 +6,6 @@ import { CreateUserDto, UpdateUserDto } from '@repo/shared';
 
 describe('UsersService', () => {
   let service: UsersService;
-  let repository: UsersRepository;
 
   const mockUsersRepository = {
     create: jest.fn(),
@@ -29,7 +28,6 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    repository = module.get<UsersRepository>(UsersRepository);
     jest.clearAllMocks();
   });
 
@@ -39,7 +37,10 @@ describe('UsersService', () => {
 
   describe('create', () => {
     it('should create a new user', async () => {
-      const dto: CreateUserDto = { email: 'test@example.com', name: 'Test User' };
+      const dto: CreateUserDto = {
+        email: 'test@example.com',
+        name: 'Test User',
+      };
       const createdUser = { id: 'uuid', ...dto };
 
       mockUsersRepository.findByEmail.mockResolvedValue([]);
@@ -48,14 +49,19 @@ describe('UsersService', () => {
       const result = await service.create(dto);
 
       expect(result).toEqual(createdUser);
-      expect(repository.findByEmail).toHaveBeenCalledWith(dto.email);
-      expect(repository.create).toHaveBeenCalledWith(dto);
+      expect(mockUsersRepository.findByEmail).toHaveBeenCalledWith(dto.email);
+      expect(mockUsersRepository.create).toHaveBeenCalledWith(dto);
     });
 
     it('should throw ConflictException if user already exists', async () => {
-      const dto: CreateUserDto = { email: 'test@example.com', name: 'Test User' };
+      const dto: CreateUserDto = {
+        email: 'test@example.com',
+        name: 'Test User',
+      };
 
-      mockUsersRepository.findByEmail.mockResolvedValue([{ id: 'uuid', email: dto.email }]);
+      mockUsersRepository.findByEmail.mockResolvedValue([
+        { id: 'uuid', email: dto.email },
+      ]);
 
       await expect(service.create(dto)).rejects.toThrow(ConflictException);
     });
@@ -63,13 +69,16 @@ describe('UsersService', () => {
 
   describe('findAll', () => {
     it('should return all users', async () => {
-      const users = [{ id: '1', email: '1@test.com' }, { id: '2', email: '2@test.com' }];
+      const users = [
+        { id: '1', email: '1@test.com' },
+        { id: '2', email: '2@test.com' },
+      ];
       mockUsersRepository.findAll.mockResolvedValue(users);
 
       const result = await service.findAll();
 
       expect(result).toEqual(users);
-      expect(repository.findAll).toHaveBeenCalled();
+      expect(mockUsersRepository.findAll).toHaveBeenCalled();
     });
   });
 
@@ -82,13 +91,15 @@ describe('UsersService', () => {
       const result = await service.findOne(id);
 
       expect(result).toEqual(user);
-      expect(repository.findById).toHaveBeenCalledWith(id);
+      expect(mockUsersRepository.findById).toHaveBeenCalledWith(id);
     });
 
     it('should throw NotFoundException if user not found', async () => {
       mockUsersRepository.findById.mockResolvedValue([]);
 
-      await expect(service.findOne('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -105,7 +116,7 @@ describe('UsersService', () => {
       const result = await service.update(id, dto);
 
       expect(result).toEqual(updatedUser);
-      expect(repository.update).toHaveBeenCalledWith(id, dto);
+      expect(mockUsersRepository.update).toHaveBeenCalledWith(id, dto);
     });
   });
 
@@ -120,7 +131,7 @@ describe('UsersService', () => {
       const result = await service.remove(id);
 
       expect(result).toEqual(user);
-      expect(repository.remove).toHaveBeenCalledWith(id);
+      expect(mockUsersRepository.remove).toHaveBeenCalledWith(id);
     });
   });
 });

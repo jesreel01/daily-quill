@@ -164,7 +164,6 @@ export default function SignUpPage() {
                 </div>
             </div>
 
-            {/* Right Section: Image */}
             <div className="relative hidden w-0 flex-1 lg:block bg-muted">
                 <div className="absolute inset-0 h-full w-full bg-primary/20 mix-blend-multiply transition-all duration-300 group-hover:bg-primary/30">
                     <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent z-10" />

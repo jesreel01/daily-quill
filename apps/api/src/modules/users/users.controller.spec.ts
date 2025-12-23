@@ -2,11 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { ParseUUIDPipe } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from '@repo/shared';
 
 describe('UsersController', () => {
   let controller: UsersController;
-  let service: UsersService;
 
   const mockUsersService = {
     findAll: jest.fn(),
@@ -27,7 +26,6 @@ describe('UsersController', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
-    service = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
@@ -50,13 +48,14 @@ describe('UsersController', () => {
       mockUsersService.findOne.mockResolvedValue(result);
 
       expect(await controller.findOne(id)).toBeDefined();
-      expect(service.findOne).toHaveBeenCalledWith(id);
+      expect(mockUsersService.findOne).toHaveBeenCalledWith(id);
     });
 
     it('should throw error if UUID is invalid (manual pipe check)', async () => {
       const pipe = new ParseUUIDPipe();
-      await expect(pipe.transform('invalid-uuid', { type: 'param', data: 'id' }))
-        .rejects.toThrow('Validation failed (uuid is expected)');
+      await expect(
+        pipe.transform('invalid-uuid', { type: 'param', data: 'id' }),
+      ).rejects.toThrow('Validation failed (uuid is expected)');
     });
   });
 
@@ -68,7 +67,7 @@ describe('UsersController', () => {
       mockUsersService.update.mockResolvedValue(result);
 
       expect(await controller.update(id, dto)).toBeDefined();
-      expect(service.update).toHaveBeenCalledWith(id, dto);
+      expect(mockUsersService.update).toHaveBeenCalledWith(id, dto);
     });
   });
 
@@ -79,7 +78,7 @@ describe('UsersController', () => {
       mockUsersService.remove.mockResolvedValue(result);
 
       expect(await controller.remove(id)).toBeDefined();
-      expect(service.remove).toHaveBeenCalledWith(id);
+      expect(mockUsersService.remove).toHaveBeenCalledWith(id);
     });
   });
 });

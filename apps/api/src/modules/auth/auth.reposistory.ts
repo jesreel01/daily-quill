@@ -6,7 +6,7 @@ import { Auth } from '@repo/shared';
 
 @Injectable()
 export class AuthRepository {
-  constructor(@Inject(DRIZZLE_DB) private readonly db: DrizzleDatabase) { }
+  constructor(@Inject(DRIZZLE_DB) private readonly db: DrizzleDatabase) {}
 
   async findByUserId(userId: string): Promise<Auth | null> {
     const [found] = await this.db
@@ -25,7 +25,11 @@ export class AuthRepository {
   }
 
   async create(data: Auth): Promise<Auth> {
-    const values: any = {
+    const values: {
+      passwordHash: string;
+      user_id: string;
+      id?: string;
+    } = {
       passwordHash: data.passwordHash,
       user_id: data.userId,
     };

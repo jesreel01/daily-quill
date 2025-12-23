@@ -6,5 +6,4 @@ import { drizzleProvider } from './drizzle.provider';
   providers: [drizzleProvider],
   exports: [drizzleProvider],
 })
-
 export class DrizzleModule {}
