@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Plus, LogOut, User, Settings } from "lucide-react";
+import { Plus, LogOut, User, Settings, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -14,16 +15,29 @@ import {
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/actions/auth";
 import { Logo } from "@/components/logo";
+import { writingService, type Entry } from "@/services/writing.service";
 
 interface AppHeaderProps {
-    title?: string;
     className?: string;
 }
 
-export function AppHeader({ title = "Zero", className }: AppHeaderProps) {
+export function AppHeader({ className }: AppHeaderProps) {
+    const [todayEntry, setTodayEntry] = useState<Entry | null>(null);
+    const today = new Date().toISOString().split('T')[0];
+
+    useEffect(() => {
+        async function checkTodayEntry() {
+            const entry = await writingService.getEntryByDate(today);
+            setTodayEntry(entry);
+        }
+        checkTodayEntry();
+    }, [today]);
+
     const handleLogout = async () => {
         await logoutAction();
     };
+
+    const hasTodayEntry = todayEntry !== null;
 
     return (
         <div className={cn("fixed top-0 left-0 right-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md px-4 sm:px-10 py-3", className)}>
@@ -33,7 +47,6 @@ export function AppHeader({ title = "Zero", className }: AppHeaderProps) {
                         <Logo iconClassName="w-4 h-4" textClassName="text-base" />
                     </Link>
                     <div className="h-4 w-px bg-border hidden sm:block" />
-                    <h2 className="text-foreground text-sm font-bold leading-tight tracking-[-0.015em] hidden sm:block">{title}</h2>
                 </div>
                 <div className="flex flex-1 justify-end gap-4 sm:gap-8 items-center">
                     <div className="hidden md:flex items-center gap-9">
@@ -52,8 +65,17 @@ export function AppHeader({ title = "Zero", className }: AppHeaderProps) {
                     </div>
                     <Link href="/write">
                         <Button className="h-9 px-4 text-sm font-bold leading-normal tracking-[0.015em]">
-                            <Plus className="mr-2 h-4 w-4" />
-                            <span className="truncate">New Entry</span>
+                            {hasTodayEntry ? (
+                                <>
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    <span className="truncate">Continue Writing</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    <span className="truncate">New Entry</span>
+                                </>
+                            )}
                         </Button>
                     </Link>
                     

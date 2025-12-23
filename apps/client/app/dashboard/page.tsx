@@ -105,7 +105,7 @@ export default function DashboardPage() {
 
     return (
         <div className="bg-background font-display antialiased min-h-screen flex flex-col overflow-x-hidden text-foreground">
-            <AppHeader title="History" />
+            <AppHeader />
 
             <div className="flex-1 w-full max-w-[1200px] mx-auto p-4 sm:p-6 lg:p-8 pt-20 flex flex-col gap-8">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
