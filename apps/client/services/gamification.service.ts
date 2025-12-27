@@ -19,7 +19,8 @@ export interface UserBadge {
 export const gamificationService = {
     async getMyBadges(): Promise<UserBadge[]> {
         try {
-            return await fetchWithAuth(`${API_URL}/gamification/my-badges`);
+            const response = await fetchWithAuth(`${API_URL}/gamification/my-badges`);
+            return response?.data ?? (Array.isArray(response) ? response : []);
         } catch {
             return [];
         }
@@ -27,7 +28,8 @@ export const gamificationService = {
 
     async getAllBadges(): Promise<Badge[]> {
         try {
-            return await fetchWithAuth(`${API_URL}/gamification/badges`);
+            const response = await fetchWithAuth(`${API_URL}/gamification/badges`);
+            return response?.data ?? (Array.isArray(response) ? response : []);
         } catch {
             return [];
         }

@@ -2,7 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 
-interface JwtValidatePayload {
+export interface JwtValidatePayload {
   sub: string;
   email: string;
 }

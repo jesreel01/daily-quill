@@ -2,7 +2,7 @@ import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { CreateEntryDto, UpdateEntryDto, EntryResponseDto } from '@repo/shared';
 import { DRIZZLE_DB, type DrizzleDatabase } from '../../db/drizzle.provider';
 import { entries } from '@repo/db';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
@@ -135,5 +135,20 @@ export class WritingService {
       createdAt: record.createdAt || new Date(),
       updatedAt: record.updatedAt || new Date(),
     };
+  }
+
+  async findLatest(userId: string): Promise<EntryResponseDto | null> {
+    const [latest] = await this.db
+      .select()
+      .from(entries)
+      .where(eq(entries.userId, userId))
+      .orderBy(desc(entries.entryDate))
+      .limit(1);
+
+    if (!latest) {
+      return null;
+    }
+
+    return this.mapToDto(latest);
   }
 }

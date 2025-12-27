@@ -15,29 +15,32 @@ import {
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/actions/auth";
 import { Logo } from "@/components/logo";
-import { writingService, type Entry } from "@/services/writing.service";
+import { writingService } from "@/services/writing.service";
+
+import { usePathname } from "next/navigation";
 
 interface AppHeaderProps {
     className?: string;
 }
 
 export function AppHeader({ className }: AppHeaderProps) {
-    const [todayEntry, setTodayEntry] = useState<Entry | null>(null);
+    const pathname = usePathname();
+    const [hasTodayEntry, setHasTodayEntry] = useState(false);
     const today = new Date().toISOString().split('T')[0];
 
     useEffect(() => {
         async function checkTodayEntry() {
-            const entry = await writingService.getEntryByDate(today);
-            setTodayEntry(entry);
+            const todayEntry = await writingService.getEntryByDate(today);
+            setHasTodayEntry(!!todayEntry);
         }
         checkTodayEntry();
-    }, [today]);
+    }, [today, pathname]);
 
     const handleLogout = async () => {
         await logoutAction();
     };
 
-    const hasTodayEntry = todayEntry !== null;
+
 
     return (
         <div className={cn("fixed top-0 left-0 right-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md px-4 sm:px-10 py-3", className)}>

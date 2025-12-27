@@ -43,6 +43,13 @@ export class WritingController {
     return this.writingService.findAll(user.id);
   }
 
+  @Get('entries/latest')
+  @ApiOperation({ summary: 'Get latest entry for current user' })
+  @ApiResponse({ status: 200, type: EntryResponseDto })
+  findLatest(@CurrentUser() user: JwtPayload) {
+    return this.writingService.findLatest(user.id);
+  }
+
   @Get('entries/date/:date')
   @ApiOperation({ summary: 'Get entry by date (YYYY-MM-DD)' })
   @ApiResponse({ status: 200, type: EntryResponseDto })

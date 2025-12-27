@@ -32,7 +32,6 @@ export function WritingEditor({
     const [isFocusMode, setIsFocusMode] = useState(false);
     const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
     const [currentEntry, setCurrentEntry] = useState<Entry | null>(initialEntry);
-    
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const lastSavedContentRef = useRef<string>(initialEntry?.content || "");
 
@@ -40,50 +39,65 @@ export function WritingEditor({
         return content.trim() ? content.trim().split(/\s+/).length : 0;
     }, [content]);
 
-    const saveEntry = useCallback(async (newContent: string) => {
-        if (newContent === lastSavedContentRef.current) {
-            return;
-        }
+    const contentRef = useRef(content);
+    const currentEntryRef = useRef(currentEntry);
+    const isSavingRef = useRef(false);
 
+    useEffect(() => {
+        contentRef.current = content;
+    }, [content]);
+
+    useEffect(() => {
+        currentEntryRef.current = currentEntry;
+    }, [currentEntry]);
+
+    const performSave = useCallback(async (contentToSave: string, entryToUpdate: Entry | null) => {
+        if (!contentToSave.trim() || contentToSave === lastSavedContentRef.current || isSavingRef.current) return;
+        
+        isSavingRef.current = true;
         setSaveStatus('saving');
-        const words = newContent.trim() ? newContent.trim().split(/\s+/).length : 0;
+        const words = contentToSave.trim().split(/\s+/).length;
         const isCompleted = words >= goal;
 
         try {
-            if (currentEntry?.id) {
+            if (entryToUpdate?.id) {
                 const updateData: UpdateEntryPayload = {
-                    content: newContent,
+                    content: contentToSave,
                     wordCount: words,
                     status: isCompleted ? 'COMPLETED' : 'DRAFT',
                 };
-                const updated = await writingService.updateEntry(currentEntry.id, updateData);
+                const updated = await writingService.updateEntry(entryToUpdate.id, updateData);
                 setCurrentEntry(updated);
+                lastSavedContentRef.current = contentToSave;
+                setSaveStatus('saved');
             } else {
                 const createData: CreateEntryPayload = {
-                    content: newContent,
+                    content: contentToSave,
                     wordCount: words,
                     entryDate: todayDate,
                     status: isCompleted ? 'COMPLETED' : 'DRAFT',
                 };
                 const created = await writingService.createEntry(createData);
                 setCurrentEntry(created);
+                lastSavedContentRef.current = contentToSave;
+                setSaveStatus('saved');
             }
-            lastSavedContentRef.current = newContent;
-            setSaveStatus('saved');
-            setTimeout(() => setSaveStatus('idle'), 2000);
         } catch (error) {
-            console.error("Failed to save entry:", error);
+            console.error("Save failed:", error);
             setSaveStatus('error');
+        } finally {
+            isSavingRef.current = false;
+             setTimeout(() => setSaveStatus('idle'), 2000);
         }
-    }, [currentEntry, goal, todayDate]);
+    }, [goal, todayDate]);
+
+    const saveEntry = useCallback((newContent: string) => {
+        performSave(newContent, currentEntryRef.current);
+    }, [performSave]);
 
     const handleContentChange = (newContent: string) => {
         setContent(newContent);
-
-        if (saveTimeoutRef.current) {
-            clearTimeout(saveTimeoutRef.current);
-        }
-
+        if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
         saveTimeoutRef.current = setTimeout(() => {
             saveEntry(newContent);
         }, 1000);
@@ -91,30 +105,62 @@ export function WritingEditor({
 
     useEffect(() => {
         return () => {
-            if (saveTimeoutRef.current) {
-                clearTimeout(saveTimeoutRef.current);
+            if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+            if (contentRef.current !== lastSavedContentRef.current) {
+                performSave(contentRef.current, currentEntryRef.current);
             }
         };
-    }, []);
+    }, [performSave]);
+
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+             if (content !== lastSavedContentRef.current) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [content]);
 
     const progress = Math.min((wordCount / goal) * 100, 100);
+
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+        }
+    }, [content]);
 
     return (
         <div className="h-[calc(100vh-theme(spacing.16))] md:h-screen flex flex-col bg-background relative overflow-hidden">
             <Link
                 href="/dashboard"
                 className={cn(
-                    "absolute top-4 left-4 z-30 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-300",
+                    "fixed top-4 left-4 z-30 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-300",
                     isFocusMode ? "opacity-0 pointer-events-none" : "opacity-100"
                 )}
             >
                 <ArrowLeft className="w-5 h-5" />
             </Link>
 
-            <main className="flex-1 flex flex-col relative overflow-hidden bg-background">
+            <div className={cn(
+                "fixed bottom-6 right-8 z-30 max-w-[240px] hidden xl:block transition-all duration-300",
+                 isFocusMode ? "opacity-0 pointer-events-none" : "opacity-100"
+            )}>
+                 <div className="bg-background/80 backdrop-blur-md border border-border/50 rounded-lg p-3 text-xs shadow-sm hover:shadow-md transition-shadow">
+                    <p className="text-primary font-medium mb-1">Daily Prompt</p>
+                    <p className="text-muted-foreground italic leading-relaxed">
+                        &quot;What is one thing you are grateful for today, and why does it matter to you right now?&quot;
+                    </p>
+                </div>
+            </div>
+
+            <main className="flex-1 flex flex-col relative bg-background overflow-hidden">
                 <header
                     className={cn(
-                        "w-full max-w-4xl mx-auto pt-8 pb-4 px-6 md:px-12 flex flex-col gap-6 shrink-0 z-10 transition-all duration-500",
+                        "w-full max-w-4xl mx-auto pt-8 pb-4 px-6 md:px-12 flex flex-col gap-6 shrink-0 z-10 transition-all duration-500 bg-background/80 backdrop-blur-sm sticky top-0",
                         isFocusMode ? "opacity-0 -translate-y-4 pointer-events-none absolute left-0 right-0" : "opacity-100 translate-y-0"
                     )}
                 >
@@ -141,25 +187,15 @@ export function WritingEditor({
                     </div>
                 </header>
 
-                <div className="flex-1 overflow-y-auto relative w-full flex flex-col items-center">
+                <div className="flex-1 relative w-full overflow-y-auto">
                     <div className={cn(
-                        "w-full max-w-3xl px-6 md:px-12 pb-32 flex flex-col flex-1 transition-all duration-500",
-                        isFocusMode ? "pt-12" : ""
+                        "w-full max-w-4xl mx-auto px-6 md:px-12 pb-32 flex flex-col transition-all duration-500 pt-8",
+                        isFocusMode ? "pt-12" : "pt-8"
                     )}>
-                        <div className={cn(
-                            "py-6 flex justify-center opacity-80 hover:opacity-100 transition-all duration-500",
-                            isFocusMode ? "opacity-0 -translate-y-4 pointer-events-none h-0 p-0 overflow-hidden" : ""
-                        )}>
-                            <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 text-center max-w-lg">
-                                <p className="text-primary text-sm font-medium mb-1">Daily Prompt</p>
-                                <p className="text-foreground/80 italic leading-relaxed">
-                                    &quot;What is one thing you are grateful for today, and why does it matter to you right now?&quot;
-                                </p>
-                            </div>
-                        </div>
 
                         <textarea
-                            className="flex-1 w-full bg-transparent border-none resize-none focus:ring-0 p-0 text-lg md:text-xl leading-relaxed text-foreground placeholder:text-muted-foreground/50 focus:outline-none min-h-[50vh]"
+                            ref={textareaRef}
+                            className="w-full bg-transparent border-none resize-none focus:ring-0 p-0 text-lg md:text-xl leading-relaxed text-foreground placeholder:text-muted-foreground/50 focus:outline-none overflow-hidden min-h-[50vh]"
                             placeholder="What's on your mind today? Start writing..."
                             spellCheck="false"
                             value={content}

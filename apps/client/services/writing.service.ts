@@ -28,29 +28,41 @@ export interface Entry {
 
 export const writingService = {
     async createEntry(data: CreateEntryPayload): Promise<Entry> {
-        return fetchWithAuth(`${API_URL}/writing/entries`, {
+        const response = await fetchWithAuth(`${API_URL}/writing/entries`, {
             method: 'POST',
             body: JSON.stringify(data),
         });
+        return response?.data ?? response;
     },
 
     async getEntries(): Promise<Entry[]> {
         const response = await fetchWithAuth(`${API_URL}/writing/entries`);
-        return Array.isArray(response) ? response : [];
+        return response?.data ? response.data : (Array.isArray(response) ? response : []);
     },
 
     async getEntryByDate(date: string): Promise<Entry | null> {
         try {
-            return await fetchWithAuth(`${API_URL}/writing/entries/date/${date}`);
+            const response = await fetchWithAuth(`${API_URL}/writing/entries/date/${date}`);
+            return response?.data ?? response;
+        } catch {
+            return null;
+        }
+    },
+
+    async getLatestEntry(): Promise<Entry | null> {
+        try {
+            const response = await fetchWithAuth(`${API_URL}/writing/entries/latest`);
+            return response?.data ?? response;
         } catch {
             return null;
         }
     },
 
     async updateEntry(id: string, data: UpdateEntryPayload): Promise<Entry> {
-        return fetchWithAuth(`${API_URL}/writing/entries/${id}`, {
+        const response = await fetchWithAuth(`${API_URL}/writing/entries/${id}`, {
             method: 'PATCH',
             body: JSON.stringify(data),
         });
+        return response?.data ?? response;
     },
 };

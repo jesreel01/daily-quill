@@ -6,6 +6,7 @@ import {
   RegisterDto,
   LoginResponseDto,
   RegisterResponseDto,
+  RefreshDto,
 } from '@repo/shared';
 import { plainToInstance } from 'class-transformer';
 
@@ -30,5 +31,14 @@ export class AuthController {
   async register(@Body() dto: RegisterDto): Promise<RegisterResponseDto> {
     const response = await this.authService.register(dto);
     return plainToInstance(RegisterResponseDto, response);
+  }
+
+  @Post('refresh')
+  @ApiOperation({ summary: 'Refresh Token' })
+  @ApiBody({ type: RefreshDto })
+  @ApiResponse({ status: 200, type: LoginResponseDto })
+  async refresh(@Body() dto: RefreshDto): Promise<LoginResponseDto> {
+    const response = await this.authService.refresh(dto);
+    return plainToInstance(LoginResponseDto, response);
   }
 }

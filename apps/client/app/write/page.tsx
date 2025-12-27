@@ -2,21 +2,29 @@ import { WritingEditor } from "@/components/writing-editor";
 import { serverFetch, API_URL } from "@/lib/server-api";
 import type { Entry } from "@/services/writing.service";
 
-export default async function WritePage() {
+type Props = {
+    searchParams: Promise<{ date?: string }>;
+};
+
+export default async function WritePage({ searchParams }: Props) {
+    const params = await searchParams;
     const today = new Date().toISOString().split('T')[0];
-    const todayFormatted = new Date().toLocaleDateString("en-US", {
+    const targetDate = params.date || today;
+
+    const dateFormatted = new Date(targetDate).toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
     });
 
-    const initialEntry = await serverFetch<Entry>(`${API_URL}/writing/entries/date/${today}`);
+    const initialEntry = await serverFetch<Entry>(`${API_URL}/writing/entries/date/${targetDate}`);
 
     return (
         <WritingEditor
+            key={targetDate}
             initialEntry={initialEntry}
-            todayDate={today}
-            todayFormatted={todayFormatted}
+            todayDate={targetDate}
+            todayFormatted={dateFormatted}
             goal={500}
         />
     );

@@ -61,8 +61,7 @@ export default function DashboardPage() {
 
     const getRecentEntries = () => {
         return entries
-            .filter(e => e.status === 'COMPLETED')
-            .sort((a, b) => new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime())
+            .sort((a, b) => new Date(b.updatedAt || b.entryDate).getTime() - new Date(a.updatedAt || a.entryDate).getTime())
             .slice(0, 3);
     };
 
@@ -76,7 +75,9 @@ export default function DashboardPage() {
         const heatmap: Record<string, number> = {};
         entries.forEach(entry => {
             if (entry.entryDate) {
-                heatmap[entry.entryDate] = entry.wordCount;
+                // Normalize to YYYY-MM-DD to match the grid keys
+                const dateKey = new Date(entry.entryDate).toISOString().split('T')[0];
+                heatmap[dateKey] = (heatmap[dateKey] || 0) + entry.wordCount;
             }
         });
         return heatmap;
@@ -203,7 +204,12 @@ export default function DashboardPage() {
                                     <div className="grid grid-rows-7 grid-flow-col gap-1 flex-1 h-[140px]">
                                         {Array.from({ length: 366 }).map((_, i) => {
                                             const date = new Date(selectedYear, 0, i + 1);
-                                            const dateStr = date.toISOString().split('T')[0];
+                                            // Construct local YYYY-MM-DD string to match API/DB format
+                                            const year = date.getFullYear();
+                                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                                            const day = String(date.getDate()).padStart(2, '0');
+                                            const dateStr = `${year}-${month}-${day}`;
+                                            
                                             const intensity = getHeatmapIntensity(dateStr, heatmapData);
                                             const wordCount = heatmapData[dateStr] || 0;
 
@@ -244,7 +250,7 @@ export default function DashboardPage() {
                                         );
                                     })
                                 ) : (
-                                    <p className="text-muted-foreground text-sm">No completed entries yet. Start writing!</p>
+                                    <p className="text-muted-foreground text-sm">No entries yet. Start writing!</p>
                                 )}
                             </div>
                         </div>

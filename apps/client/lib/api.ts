@@ -32,7 +32,33 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
         ...options,
         credentials: 'include',
         headers,
+        cache: 'no-store',
     });
+
+    if (response.status === 401) {
+        try {
+            const { refreshSessionAction } = await import("@/app/actions/auth");
+            const result = await refreshSessionAction();
+            
+            if (result && 'success' in result && result.success) {
+                const newToken = getCookie(SESSION_COOKIE_NAME);
+                if (newToken) {
+                    (headers as Record<string, string>)['Authorization'] = `Bearer ${newToken}`;
+                    const retryResponse = await fetch(url, {
+                        ...options,
+                        credentials: 'include',
+                        headers,
+                        cache: 'no-store',
+                    });
+                    if (retryResponse.ok) {
+                        return retryResponse.json();
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Token refresh failed:", error);
+        }
+    }
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

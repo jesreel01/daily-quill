@@ -14,7 +14,8 @@ export interface UserStats {
 export const analyticsService = {
     async getStats(): Promise<UserStats | null> {
         try {
-            return await fetchWithAuth(`${API_URL}/analytics/stats`);
+            const response = await fetchWithAuth(`${API_URL}/analytics/stats`);
+            return response?.data ?? response;
         } catch {
             return null;
         }

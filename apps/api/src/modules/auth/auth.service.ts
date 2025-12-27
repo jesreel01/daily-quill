@@ -4,6 +4,7 @@ import { AuthRepository } from './auth.reposistory';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { JwtValidatePayload } from './jwt.strategy';
 
 @Injectable()
 export class AuthService {
@@ -74,5 +75,30 @@ export class AuthService {
       accessToken: this.jwtService.sign(payload),
       refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
+  }
+
+  public async refresh(refreshDto: { refreshToken: string }) {
+    try {
+      const payload = this.jwtService.verify<JwtValidatePayload>(refreshDto.refreshToken);
+      const user = await this.usersService.findByEmail(payload.email);
+      if (!user) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      const newPayload = { email: user.email, sub: user.id };
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        },
+        accessToken: this.jwtService.sign(newPayload),
+        refreshToken: this.jwtService.sign(newPayload, { expiresIn: '7d' }),
+      };
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 }

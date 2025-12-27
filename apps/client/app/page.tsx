@@ -2,15 +2,13 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
-  Leaf,
   ShieldCheck,
-  Lock,
   EyeOff,
   Zap,
   Calendar,
-  Timer,
-  PenOff,
-  TrendingUp,
+  Sparkles,
+  Maximize2,
+  Flame,
   Keyboard
 } from "lucide-react"
 import type { Metadata } from "next"
@@ -72,7 +70,7 @@ export default function LandingPage() {
                   <Zap className="size-6" />
                 </div>
                 <h3 className="text-foreground text-lg font-bold mb-2">Zero Friction</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">Don't overthink. Just type. The interface is designed to disappear so your flow state remains unbroken.</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">Don&apos;t overthink. Just type. The interface is designed to disappear so your flow state remains unbroken.</p>
               </Card>
               <Card className="flex flex-col p-6 rounded-2xl bg-card border border-border/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
                 <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
@@ -96,34 +94,34 @@ export default function LandingPage() {
               <div className="flex flex-1 flex-col md:items-center gap-6 group">
                 <div className="flex items-center gap-4 md:flex-col md:gap-6">
                   <div className="relative flex items-center justify-center size-14 rounded-full bg-card border-2 border-primary text-primary z-10 shrink-0 shadow-sm ring-4 ring-primary/10">
-                    <Timer className="size-6" />
+                    <Sparkles className="size-6" />
                   </div>
-                  <h3 className="text-lg font-bold text-foreground md:text-center">1. Set the Timer</h3>
+                  <h3 className="text-lg font-bold text-foreground md:text-center">1. Daily Inspiration</h3>
                 </div>
                 <p className="text-muted-foreground text-sm md:text-center pl-[72px] md:pl-0 max-w-[300px]">
-                  Commit to 5 minutes of pure flow. The timer creates a container for your focus.
+                  Never face a blank page alone. Daily prompts jumpstart your creativity and get you into flow.
                 </p>
               </div>
               <div className="flex flex-1 flex-col md:items-center gap-6 group">
                 <div className="flex items-center gap-4 md:flex-col md:gap-6">
                   <div className="relative flex items-center justify-center size-14 rounded-full bg-card border-2 border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-primary transition-colors z-10 shrink-0 shadow-sm">
-                    <PenOff className="size-6" />
+                    <Maximize2 className="size-6" />
                   </div>
-                  <h3 className="text-lg font-bold text-foreground md:text-center">2. No Backspace</h3>
+                  <h3 className="text-lg font-bold text-foreground md:text-center">2. Deep Focus</h3>
                 </div>
                 <p className="text-muted-foreground text-sm md:text-center pl-[72px] md:pl-0 max-w-[300px]">
-                  Embrace mistakes. There is no editing while the timer is running. Just keep moving forward.
+                  Toggle Focus Mode to banish distractions. The interface fades away, leaving just you and your words.
                 </p>
               </div>
               <div className="flex flex-1 flex-col md:items-center gap-6 group">
                 <div className="flex items-center gap-4 md:flex-col md:gap-6">
                   <div className="relative flex items-center justify-center size-14 rounded-full bg-card border-2 border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-primary transition-colors z-10 shrink-0 shadow-sm">
-                    <TrendingUp className="size-6" />
+                    <Flame className="size-6" />
                   </div>
-                  <h3 className="text-lg font-bold text-foreground md:text-center">3. Track & Reflect</h3>
+                  <h3 className="text-lg font-bold text-foreground md:text-center">3. Gamify Habit</h3>
                 </div>
                 <p className="text-muted-foreground text-sm md:text-center pl-[72px] md:pl-0 max-w-[300px]">
-                  Visualize your progress. Review your entries only after a cooling-off period.
+                  Track your consistency with heatmaps and streaks. Earn badges as you build a writing habit that lasts.
                 </p>
               </div>
             </div>
@@ -141,11 +139,11 @@ export default function LandingPage() {
                   Ready to clear your mind?
                 </h2>
                 <p className="text-muted-foreground mb-10 max-w-[480px] text-lg">
-                  The blank page is waiting. No pressure, just words. It's safe here.
+                  The blank page is waiting. No pressure, just words. It&apos;s safe here.
                 </p>
                 <div className="flex flex-col gap-4 w-full max-w-xs">
                   <Button className="w-full h-14 text-lg font-bold shadow-lg shadow-primary/20 hover:-translate-y-0.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl">
-                    I understand. Let's begin.
+                    I understand. Let&apos;s begin.
                   </Button>
                 </div>
               </div>
