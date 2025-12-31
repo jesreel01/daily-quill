@@ -1,0 +1,39 @@
+FROM node:20-alpine AS base
+
+FROM base AS builder
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+# Install turbo
+RUN npm install -g pnpm turbo
+COPY . .
+RUN turbo prune client --docker
+
+FROM base AS installer
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+RUN npm install -g pnpm
+
+# First install dependencies
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install
+
+# Build the project
+COPY --from=builder /app/out/full/ .
+RUN pnpm turbo build --filter=client
+
+FROM base AS runner
+WORKDIR /app
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+USER nextjs
+
+COPY --from=installer /app/apps/client/public ./apps/client/public
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=installer --chown=nextjs:nodejs /app/apps/client/.next/standalone ./
+COPY --from=installer --chown=nextjs:nodejs /app/apps/client/.next/static ./apps/client/.next/static
+
+CMD ["node", "apps/client/server.js"]
