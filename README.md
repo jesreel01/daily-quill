@@ -27,19 +27,22 @@ Daily Quill is a premium, distraction-free journaling application designed to he
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **Auth**: [Passport.js](https://www.passportjs.org/) (JWT Strategy)
 
-### Monorepo & Tooling
+### Infrastructure & DevOps
 
-- **Build System**: [Turbo](https://turbo.build/)
-- **Package Manager**: [pnpm](https://pnpm.io/)
-- **Code Quality**: [ESLint](https://eslint.org/) & [Prettier](https://prettier.io/)
+- **Containerization**: [Docker](https://www.docker.com/) (Production-ready Multi-stage builds)
+- **CI/CD**: [GitHub Actions](https://github.com/features/actions) (Automated Testing & Building)
+- **Build System**: [Turbo](https://turbo.build/) (Smart Caching & Orchestration)
 
 ## 📂 Project Structure
 
 ```text
 /
+├── .github/        # CI/CD Workflows
 ├── apps/
 │   ├── api/        # NestJS Backend
 │   └── client/     # Next.js Frontend
+├── infra/          # Infrastructure definitions
+│   └── docker/     # Dockerfiles
 ├── packages/
 │   ├── db/         # Database schema, migrations, and Drizzle client
 │   ├── shared/     # Common TypeScript types and utilities
@@ -54,9 +57,9 @@ Daily Quill is a premium, distraction-free journaling application designed to he
 
 - [Node.js](https://nodejs.org/) (v18 or higher)
 - [pnpm](https://pnpm.io/) (v9+)
-- [PostgreSQL](https://www.postgresql.org/) instance
+- [Docker](https://www.docker.com/) (Optional, for containerized development)
 
-### Installation
+### Local Installation
 
 1. **Clone the repository**:
 
@@ -76,18 +79,23 @@ Daily Quill is a premium, distraction-free journaling application designed to he
    - `apps/api/.env`
    - `apps/client/.env`
 
-4. **Initialize the Database**:
+4. **Start the Development Database**:
+
+   ```bash
+   docker compose up -d postgresdb
+   ```
+
+5. **Initialize the Database**:
+
    ```bash
    pnpm --filter @repo/db push
    ```
 
-### Development
+6. **Start Development Servers**:
 
-Start the development servers for all applications:
-
-```bash
-pnpm dev
-```
+   ```bash
+   pnpm dev
+   ```
 
 The applications will be available at:
 
@@ -95,10 +103,34 @@ The applications will be available at:
 - API: `http://localhost:3001`
 - Swagger Docs: `http://localhost:3001/api/docs`
 
+## 🐳 Docker Support
+
+This project includes production-optimized Dockerfiles that leverage **Turborepo** for caching and pruning.
+
+### Build Images
+
+To build the artifacts locally:
+
+```bash
+# Build the API
+docker build -f infra/docker/Dockerfile.api -t daily-quill-api .
+
+# Build the Web Client
+docker build -f infra/docker/Dockerfile.web -t daily-quill-web .
+```
+
+### CI/CD Workflow
+
+The repository is configured with a **GitHub Actions** pipeline (`.github/workflows/ci.yml`) that runs on every push:
+
+1. **Test Phase**: Installs dependencies (cached) and runs tests via Turborepo.
+2. **Build Phase**: Builds Docker images using **Docker Layer Caching** and **Turbo Pruning** for maximum speed.
+
 ## 📜 Scripts
 
 - `pnpm build`: Build all applications and packages.
 - `pnpm dev`: Start all applications in development mode.
 - `pnpm lint`: Run ESLint across the entire monorepo.
 - `pnpm format`: Format all files using Prettier.
+- `pnpm test`: Run tests across the monorepo (smartly cached).
 - `pnpm check-types`: Run TypeScript compiler check.
