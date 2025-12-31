@@ -18,11 +18,11 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
         return (
             <div className="relative group">
                 {showIcon && (
-                    <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                    <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 )}
                 <Input
                     type={showPassword ? "text" : "password"}
-                    className={cn(showIcon ? "pl-10 mr-10" : "pr-10", className)}
+                    className={cn("h-11 bg-background", showIcon ? "pl-10 pr-10" : "pr-10", className)}
                     ref={ref}
                     {...props}
                 />

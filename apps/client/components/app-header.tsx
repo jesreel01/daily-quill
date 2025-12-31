@@ -61,7 +61,7 @@ export function AppHeader({ className }: AppHeaderProps) {
                         </Link>
                         <Link
                             className="text-muted-foreground hover:text-foreground text-sm font-medium leading-normal transition-colors"
-                            href="#"
+                            href="/settings/general"
                         >
                             Settings
                         </Link>
@@ -94,10 +94,12 @@ export function AppHeader({ className }: AppHeaderProps) {
                                 <User className="mr-2 h-4 w-4" />
                                 <span>Profile</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer">
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>Settings</span>
-                            </DropdownMenuItem>
+                            <Link href="/settings/general">
+                                <DropdownMenuItem className="cursor-pointer">
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    <span>Settings</span>
+                                </DropdownMenuItem>
+                            </Link>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive" onClick={handleLogout}>
                                 <LogOut className="mr-2 h-4 w-4" />

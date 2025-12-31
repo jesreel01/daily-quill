@@ -1,4 +1,4 @@
-import { Feather } from "lucide-react"
+import { QuillIcon } from "@/components/icons"
 
 interface LogoProps {
     className?: string
@@ -10,7 +10,7 @@ export function Logo({ className, iconClassName = "w-5 h-5", textClassName = "te
     return (
         <div className={`flex items-center gap-3 select-none ${className || ""}`}>
             <div className="size-8 flex items-center justify-center text-primary bg-primary/10 rounded-lg">
-                <Feather className={iconClassName} />
+                <QuillIcon className={iconClassName} />
             </div>
             <h2 className={`${textClassName} font-bold leading-tight tracking-tight text-foreground`}>
                 Daily Quill
@@ -18,3 +18,4 @@ export function Logo({ className, iconClassName = "w-5 h-5", textClassName = "te
         </div>
     )
 }
+

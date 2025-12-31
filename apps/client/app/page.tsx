@@ -14,8 +14,7 @@ import {
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Daily Quill - Welcome / Philosophy",
-  description: "Zero friction. Pure focus. A digital sanctuary for your thoughts, free from judgment and the noise of the world.",
+  title: "Welcome",
 }
 
 import { SiteHeader } from "@/components/site-header"
