@@ -32,6 +32,9 @@
     },
     "db:seed": {
       "cache": false
+    },
+    "test": {
+      "dependsOn": ["^test"]
     }
   }
 }
