@@ -53,11 +53,36 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for changed-files
+
+      - name: Get changed files (API)
+        id: changed-files-api
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            apps/api/**
+            packages/**
+            infra/**
+            pnpm-lock.yaml
+            turbo.json
+
+      - name: Get changed files (Web)
+        id: changed-files-web
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            apps/client/**
+            packages/**
+            infra/**
+            pnpm-lock.yaml
+            turbo.json
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Build API Image
+        if: steps.changed-files-api.outputs.any_changed == 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -68,6 +93,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build Web Image
+        if: steps.changed-files-web.outputs.any_changed == 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
