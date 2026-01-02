@@ -4,12 +4,16 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "sst:dev": "sst dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "@pulumi/aws": "^7.15.0",
+    "@pulumi/aws-native": "^1.46.0",
     "prettier": "^3.7.4",
+    "sst": "^3.17.25",
     "turbo": "^2.6.3",
     "typescript": "5.9.2"
   },

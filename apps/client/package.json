@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:open-next": "next build && cp -r .next/standalone/apps/client/. .next/standalone/",
     "start": "next start",
     "lint": "eslint",
     "test": "echo 'No tests yet'"
