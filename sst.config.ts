@@ -33,8 +33,31 @@ export default $config({
 
     new sst.aws.Nextjs("Client", {
       path: "apps/client",
+
       buildCommand:
         'npx --yes @opennextjs/aws@latest build --build-command "npm run build:open-next"',
+    });
+
+    new sst.aws.Function("Api", {
+      handler: "apps/api/dist/lambda.handler",
+      url: true,
+      timeout: "30 seconds",
+      copyFiles: [{ from: "apps/api/package.json", to: "package.json" }],
+      nodejs: {
+        format: "cjs",
+        install: [
+          "@nestjs/microservices",
+          "@nestjs/websockets",
+          "class-transformer",
+          "class-validator",
+          "bcrypt",
+          "pg",
+        ],
+      },
+      environment: {
+        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres",
+        PORT: "8000",
+      },
     });
   },
 });
