@@ -32,11 +32,14 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next/static ./apps/client/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/client/public ./apps/client/public
+
+WORKDIR /app/apps/client
+
+COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/client/public ./public
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "apps/client/server.js"]
+CMD ["node", "server.js"]
