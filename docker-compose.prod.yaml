@@ -34,9 +34,6 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS}
     expose:
       - "3000"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.api.loadbalancer.server.port=3000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -70,9 +67,6 @@ services:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     expose:
       - "3000"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.client.loadbalancer.server.port=3000"
     depends_on:
       - api
     networks:
