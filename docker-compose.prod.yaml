@@ -41,6 +41,7 @@ services:
         condition: service_healthy
     networks:
       - daily-quill-network
+      - dokploy-network
     healthcheck:
       test:
         [
@@ -73,6 +74,7 @@ services:
       - api
     networks:
       - daily-quill-network
+      - dokploy-network
     healthcheck:
       test:
         [
@@ -95,3 +97,5 @@ volumes:
 networks:
   daily-quill-network:
     driver: bridge
+  dokploy-network:
+    external: true
