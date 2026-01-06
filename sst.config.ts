@@ -19,18 +19,6 @@ export default $config({
     };
   },
   async run() {
-    const aws = await import("@pulumi/aws");
-    const awsnative = await import("@pulumi/aws-native");
-
-    $transform(aws.lambda.FunctionUrl, (args, opts, name) => {
-      new awsnative.lambda.Permission(`${name}InvokePermission`, {
-        action: "lambda:InvokeFunction",
-        functionName: args.functionName,
-        principal: "*",
-        invokedViaFunctionUrl: true,
-      });
-    });
-
     new sst.aws.Nextjs("Client", {
       path: "apps/client",
 
@@ -38,9 +26,14 @@ export default $config({
         'npx --yes @opennextjs/aws@latest build --build-command "npm run build:open-next"',
     });
 
-    new sst.aws.Function("Api", {
+    // const databaseUrl = new sst.Secret("DatabaseUrl");
+
+    const api = new sst.aws.ApiGatewayV2("Api", {
+      domain: "api.dailyquill.orisondigital.net",
+    });
+
+    api.route("ANY /{proxy+}", {
       handler: "apps/api/dist/lambda.handler",
-      url: true,
       timeout: "30 seconds",
       copyFiles: [{ from: "apps/api/package.json", to: "package.json" }],
       nodejs: {
@@ -54,9 +47,9 @@ export default $config({
           "pg",
         ],
       },
+      // link: [databaseUrl],
       environment: {
-        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres",
-        PORT: "8000",
+        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/daily_quill",
       },
     });
   },
