@@ -1,23 +1,16 @@
 FROM node:20-alpine AS base
 RUN corepack enable pnpm
 
-FROM base AS deps
-WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages ./packages
-COPY apps/client/package.json ./apps/client/
-RUN pnpm install --frozen-lockfile
-
 FROM base AS builder
 WORKDIR /app
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages ./packages
-COPY --from=deps /app/apps/client/node_modules ./apps/client/node_modules
-COPY . .
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages ./packages
+COPY apps/client ./apps/client
 
+RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @repo/shared build
 RUN pnpm --filter client build
 
@@ -32,14 +25,11 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next/standalone ./
-
-WORKDIR /app/apps/client
-
-COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/client/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/client/.next/static ./apps/client/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/client/public ./apps/client/public
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["node", "apps/client/server.js"]
