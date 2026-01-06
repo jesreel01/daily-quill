@@ -67,6 +67,11 @@ services:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     expose:
       - "3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.daily-quill-client.rule=Host(`jesreel-dailyquill-uafywy-c52284-109-199-103-142.traefik.me`)"
+      - "traefik.http.routers.daily-quill-client.entrypoints=web"
+      - "traefik.http.services.daily-quill-client.loadbalancer.server.port=3000"
     depends_on:
       - api
     networks:
