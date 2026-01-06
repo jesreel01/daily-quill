@@ -32,8 +32,8 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       CORS_ORIGINS: ${CORS_ORIGINS}
-    ports:
-      - "3001:3000"
+    expose:
+      - "3000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.api.loadbalancer.server.port=3000"
@@ -68,8 +68,8 @@ services:
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.client.loadbalancer.server.port=3000"
