@@ -32,14 +32,11 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       CORS_ORIGINS: ${CORS_ORIGINS}
-    expose:
-      - "3000"
+    ports:
+      - "3001:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.daily-quill-api.rule=Host(`${API_DOMAIN}`)"
-      - "traefik.http.routers.daily-quill-api.entrypoints=websecure"
-      - "traefik.http.routers.daily-quill-api.tls.certresolver=letsencrypt"
-      - "traefik.http.services.daily-quill-api.loadbalancer.server.port=3000"
+      - "traefik.http.services.api.loadbalancer.server.port=3000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,14 +68,11 @@ services:
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.daily-quill-client.rule=Host(`${CLIENT_DOMAIN}`)"
-      - "traefik.http.routers.daily-quill-client.entrypoints=websecure"
-      - "traefik.http.routers.daily-quill-client.tls.certresolver=letsencrypt"
-      - "traefik.http.services.daily-quill-client.loadbalancer.server.port=3000"
+      - "traefik.http.services.client.loadbalancer.server.port=3000"
     depends_on:
       - api
     networks:
