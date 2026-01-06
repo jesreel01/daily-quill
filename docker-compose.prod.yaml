@@ -36,8 +36,10 @@ services:
       - "3000"
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.daily-quill-api.rule=Host(`${API_DOMAIN}`)"
+      - "traefik.http.routers.daily-quill-api.entrypoints=websecure"
+      - "traefik.http.routers.daily-quill-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.daily-quill-api.loadbalancer.server.port=3000"
-      - "traefik.http.services.daily-quill-api.loadbalancer.passhostheader=true"
     depends_on:
       postgres:
         condition: service_healthy
@@ -73,8 +75,10 @@ services:
       - "3000"
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.daily-quill-client.rule=Host(`${CLIENT_DOMAIN}`)"
+      - "traefik.http.routers.daily-quill-client.entrypoints=websecure"
+      - "traefik.http.routers.daily-quill-client.tls.certresolver=letsencrypt"
       - "traefik.http.services.daily-quill-client.loadbalancer.server.port=3000"
-      - "traefik.http.services.daily-quill-client.loadbalancer.passhostheader=true"
     depends_on:
       - api
     networks:

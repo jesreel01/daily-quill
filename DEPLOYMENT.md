@@ -35,6 +35,8 @@ JWT_SECRET=<your-jwt-secret-key>
 JWT_EXPIRES_IN=7d
 
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+API_DOMAIN=api.yourdomain.com
+CLIENT_DOMAIN=yourdomain.com
 ```
 
 **Important**:
@@ -42,6 +44,8 @@ NEXT_PUBLIC_API_URL=https://api.yourdomain.com
 - Replace `<your-secure-password>` with a strong PostgreSQL password
 - Replace `<your-jwt-secret-key>` with a secure random string for JWT signing
 - Update `NEXT_PUBLIC_API_URL` with your actual API domain
+- Set `API_DOMAIN` to your API subdomain (without https://)
+- Set `CLIENT_DOMAIN` to your main domain (without https://)
 - Dokploy uses Traefik as a reverse proxy, so port mappings are not needed
 
 #### 2. Deploy in Dokploy
