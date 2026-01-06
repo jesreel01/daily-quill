@@ -34,6 +34,10 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS}
     expose:
       - "3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.daily-quill-api.loadbalancer.server.port=3000"
+      - "traefik.http.services.daily-quill-api.loadbalancer.passhostheader=true"
     depends_on:
       postgres:
         condition: service_healthy
@@ -67,6 +71,10 @@ services:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     expose:
       - "3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.daily-quill-client.loadbalancer.server.port=3000"
+      - "traefik.http.services.daily-quill-client.loadbalancer.passhostheader=true"
     depends_on:
       - api
     networks:
