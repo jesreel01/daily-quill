@@ -1,7 +1,6 @@
 services:
   postgres:
     image: postgres:18-alpine
-    container_name: daily-quill-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -25,7 +24,6 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: daily-quill-api
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -63,7 +61,6 @@ services:
       dockerfile: apps/client/Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-    container_name: daily-quill-client
     restart: unless-stopped
     environment:
       NODE_ENV: production

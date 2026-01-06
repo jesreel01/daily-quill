@@ -36,6 +36,6 @@ USER nestjs
 
 WORKDIR /app/apps/api
 
-EXPOSE 3000
+EXPOSE 3000 
 
 CMD ["node", "dist/main"]
