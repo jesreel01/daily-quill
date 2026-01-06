@@ -40,4 +40,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "apps/client/server.js"]
+WORKDIR /app/apps/client
+CMD ["node", "server.js"]
