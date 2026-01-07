@@ -52,6 +52,4 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# SST
-.sst/
-.open-next/
+
